@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Local config
+.env
+.env.local
+*.local
+
+# Logs / runtime
+logs/
+*.log
+kit.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/

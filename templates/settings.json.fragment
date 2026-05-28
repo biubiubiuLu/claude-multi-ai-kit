@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/lukai/bin/cship:*)",
+      "Bash(/Users/lukai/.claude-multi-ai-kit/.venv/bin/python:*)",
+      "Bash(git apply:*)",
+      "Bash(git apply --check:*)"
+    ]
+  },
+  "_kit_managed_keys": [
+    "permissions.allow"
+  ]
+}
