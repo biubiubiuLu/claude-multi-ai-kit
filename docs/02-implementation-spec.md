@@ -455,8 +455,8 @@ exclude_paths:
 
 ```bash
 # ===== 角色 → Provider =====
-PLANNER_PROVIDER=claude         # claude | gpt | gemini | deepseek
-CODER_PROVIDER=deepseek
+PLANNER_PROVIDER=gpt            # claude | gpt | gemini | deepseek | opencode
+CODER_PROVIDER=opencode
 REVIEWER_PROVIDER=gpt
 FRONTEND_PROVIDER=gemini
 
@@ -465,13 +465,15 @@ FRONTEND_PROVIDER=gemini
 CLAUDE_MODE=cli                 # cli | sdk
 GPT_MODE=cli
 GEMINI_MODE=cli
-DEEPSEEK_MODE=sdk                # DeepSeek 无 CLI，强制 sdk
+DEEPSEEK_MODE=cli
+OPENCODE_MODE=cli
 
 # ===== CLI 路径（仅 *_MODE=cli 时使用，install.sh 自动探测填入）=====
 CLAUDE_CLI_PATH=/usr/local/bin/claude
 GPT_CLI_PATH=/usr/local/bin/codex          # OpenAI Codex CLI（复用 ChatGPT 订阅）
 GEMINI_CLI_PATH=/Users/lukai/.local/bin/agy
-DEEPSEEK_CLI_PATH=                          # 留空
+DEEPSEEK_CLI_PATH=/opt/homebrew/bin/opencode
+OPENCODE_CLI_PATH=/opt/homebrew/bin/opencode
 
 # ===== API Key（仅 *_MODE=sdk 时使用，可留空）=====
 ANTHROPIC_API_KEY=
@@ -481,8 +483,9 @@ GEMINI_API_KEY=
 
 # ===== 模型版本（cli 模式下也可作 -m 参数传入；sdk 模式下作请求字段）=====
 CLAUDE_MODEL=claude-opus-4-7
-GPT_MODEL=gpt-4.1
-DEEPSEEK_MODEL=deepseek-coder
+GPT_MODEL=
+DEEPSEEK_MODEL=deepseek/deepseek-chat
+OPENCODE_MODEL=deepseek/deepseek-chat
 GEMINI_MODEL=gemini-2.5-pro
 
 # ===== 可选：自定义 API endpoint（公司网关场景）=====
@@ -516,9 +519,9 @@ def call_model(prompt: str, files: list[Path], mode_hint: str) -> str:
 | Claude | `claude` (Claude Code) | `claude -p "<prompt>"` | 文本，可附文件路径 | 纯文本 | 复用订阅；session 失效需 `claude login` |
 | Gemini | `agy`（Google Antigravity CLI，Gemini 前端 Agent） | `agy run "<prompt>"` 或 `--prompt-file`（以本机 `agy --help` 为准） | 文本 + 项目路径 | patch / 文本 | 复用 Google 账号订阅；项目级会话存放在 `<repo>/.antigravitycli/` |
 | GPT | `codex`（OpenAI 官方 CLI） | `codex exec "<prompt>"` 或 `codex --prompt-file` | 文本，可附文件 | 纯文本 / JSON | 复用 ChatGPT 订阅（Plus / Pro 含 Codex 额度）；session 失效需 `codex login` |
-| DeepSeek | 无官方 CLI | — | — | — | 强制 `DEEPSEEK_MODE=sdk` |
+| DeepSeek / opencode | `opencode` | `opencode run -m deepseek/deepseek-chat "<prompt>"` | 文本 + 项目路径 | 文本 / patch | opencode 负责 DeepSeek provider 登录态与模型路由 |
 
-> install.sh 在 §3 的 Step 5 之前增加 CLI 探测步骤（详见 §8.4），把找到的 CLI 路径写入 `.env`，找不到的对应 provider 自动降级为 sdk 并提示用户填 API key。
+> install.sh 在 §3 的 Step 5 之前增加 CLI 探测步骤（详见 §8.4），把找到的 CLI 路径写入 `.env`，找不到的对应 provider 自动降级为 sdk 并提示用户填 API key。当前推荐不再直接用 DeepSeek SDK，而是 `CODER_PROVIDER=opencode` 通过 opencode CLI 调 DeepSeek。
 
 ### 8.4 install.sh 的 CLI 探测逻辑
 
@@ -542,7 +545,9 @@ detect_cli() {
 detect_cli claude   CLAUDE_CLI_PATH
 detect_cli codex    GPT_CLI_PATH        # 若失败则 GPT 走 sdk
 detect_cli agy      GEMINI_CLI_PATH     # Google Antigravity
-# deepseek 直接：write_env DEEPSEEK_MODE sdk
+detect_cli opencode OPENCODE_CLI_PATH   # DeepSeek 编码默认走 opencode
+write_env DEEPSEEK_CLI_PATH "$(command -v opencode 2>/dev/null || true)"
+write_env DEEPSEEK_MODE "$(command -v opencode >/dev/null 2>&1 && echo cli || echo sdk)"
 ```
 
 ### 8.5 切换示例

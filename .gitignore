@@ -14,6 +14,7 @@ venv/
 logs/
 *.log
 kit.lock
+docs/multi-ai-runs/
 
 # OS
 .DS_Store

@@ -75,14 +75,12 @@ bash /Users/lukai/.claude-multi-ai-kit/install.sh
 
 ```
 [CLI 探测]
-  [✓] 发现 claude  CLI: /usr/local/bin/claude       → CLAUDE_MODE=cli
-  [✓] 发现 codex   CLI: /usr/local/bin/codex        → GPT_MODE=cli
+  [✓] 发现 codex   CLI: /opt/homebrew/bin/codex     → GPT_MODE=cli
+  [✓] 发现 opencode CLI: /opt/homebrew/bin/opencode → OPENCODE_MODE=cli, DEEPSEEK_MODE=cli
   [✓] 发现 agy     CLI: /Users/lukai/.local/bin/agy  → GEMINI_MODE=cli
-  [!] DeepSeek 无官方 CLI                           → DEEPSEEK_MODE=sdk
 
 [补 API key]（仅 *_MODE=sdk 的会问）
-  DeepSeek API key (sk-...):       ▊
-  跳过 Anthropic（已检测到 claude CLI）
+  跳过 DeepSeek （已通过 opencode CLI 登录）
   跳过 OpenAI   （已检测到 codex  CLI）
   跳过 Gemini   （已检测到 agy    CLI）
 
@@ -174,8 +172,8 @@ cship "在 README 末尾追加一行测试文字"
 
 ```bash
 # ===== 角色 → Provider 路由 =====
-PLANNER_PROVIDER=claude
-CODER_PROVIDER=deepseek
+PLANNER_PROVIDER=gpt
+CODER_PROVIDER=opencode
 REVIEWER_PROVIDER=gpt
 FRONTEND_PROVIDER=gemini
 
@@ -188,24 +186,27 @@ FRONTEND_ENABLED=true
 CLAUDE_MODE=cli
 GPT_MODE=cli
 GEMINI_MODE=cli
-DEEPSEEK_MODE=sdk
+DEEPSEEK_MODE=cli
+OPENCODE_MODE=cli
 
 # ===== CLI 路径（install.sh 自动探测填入）=====
 CLAUDE_CLI_PATH=/usr/local/bin/claude
-GPT_CLI_PATH=/usr/local/bin/codex
+GPT_CLI_PATH=/opt/homebrew/bin/codex
 GEMINI_CLI_PATH=/Users/lukai/.local/bin/agy
-DEEPSEEK_CLI_PATH=
+DEEPSEEK_CLI_PATH=/opt/homebrew/bin/opencode
+OPENCODE_CLI_PATH=/opt/homebrew/bin/opencode
 
 # ===== API Keys（仅 *_MODE=sdk 时使用，可留空）=====
 ANTHROPIC_API_KEY=
 OPENAI_API_KEY=
-DEEPSEEK_API_KEY=sk-...
+DEEPSEEK_API_KEY=
 GEMINI_API_KEY=
 
 # ===== 模型版本 =====
 CLAUDE_MODEL=claude-opus-4-7
-GPT_MODEL=gpt-4.1
-DEEPSEEK_MODEL=deepseek-coder
+GPT_MODEL=
+DEEPSEEK_MODEL=deepseek/deepseek-chat
+OPENCODE_MODEL=deepseek/deepseek-chat
 GEMINI_MODEL=gemini-2.5-pro
 
 # ===== 可选：自定义 API endpoint =====
@@ -389,7 +390,7 @@ ls -lt /Users/lukai/.claude/logs/ | head
 | Claude Code 里 `/ship` 找不到 | agents/commands 没装 | 重跑 `install.sh`，或检查 `/Users/lukai/.claude/agents/` |
 | 模型返回 429 | 限流 | 调小并发，或在 `.env` 加 `AI_MAX_RETRY=5` |
 | 想看完整 prompt | 默认脱敏 | `AI_DEBUG=1 cship "..."` |
-| 新装了 gemini CLI 想用上 | `.env` 仍是 sdk | `install.sh --redetect-cli` 重探测 |
+| 新装了 agy CLI 想用上 | `.env` 仍是 sdk | `install.sh --redetect-cli` 重探测，并确认 `GEMINI_CLI_PATH=/Users/lukai/.local/bin/agy` |
 
 ---
 

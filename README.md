@@ -1,11 +1,37 @@
 # claude-multi-ai-kit
 
-> 一套可一键部署的多 AI 协作脚手架：**Claude 写计划 / DeepSeek 写代码 / GPT(Codex) 审查与测试 / Gemini(Antigravity) 优化前端**。
-> 默认走 CLI 模式复用本机订阅，仅 DeepSeek 必须 API key。
+> 一套可一键部署的多 AI 协作脚手架：**GPT(Codex) 写计划 / DeepSeek(opencode) 写代码 / GPT(Codex) 审查与测试 / Gemini(Antigravity) 优化前端**。
+> 默认走 CLI 模式复用本机已登录账号。
 
 ---
 
 ## 快速开始
+
+当前最小可用入口：
+
+```bash
+/Users/lukai/IdeaProjects/claude-multi-ai-kit/scripts/cship \
+  --repo /Users/lukai/IdeaProjects/weibo-talent-introduction \
+  --plan-only \
+  "按 historical-mail-automation-plan.md 开发 Sprint 4"
+```
+
+安全验证入口，不调用外部模型：
+
+```bash
+/Users/lukai/IdeaProjects/claude-multi-ai-kit/scripts/cship \
+  --repo /path/to/project \
+  --dry-run \
+  --plan-only \
+  "验证项目配置"
+```
+
+也可以安装到本机默认位置：
+
+```bash
+/Users/lukai/IdeaProjects/claude-multi-ai-kit/scripts/install.sh
+/Users/lukai/IdeaProjects/claude-multi-ai-kit/scripts/doctor.sh
+```
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/<you>/claude-multi-ai-kit/main/install.sh | bash
@@ -25,8 +51,8 @@ curl -fsSL https://raw.githubusercontent.com/<you>/claude-multi-ai-kit/main/inst
 
 | 角色 | Provider | 默认模式 | CLI / Key |
 |------|----------|---------|-----------|
-| Planner（开发计划） | Claude | `cli` | `claude` |
-| Coder（写代码） | DeepSeek | `sdk` | `DEEPSEEK_API_KEY` |
+| Planner（开发计划） | GPT | `cli` | `codex` |
+| Coder（写代码） | opencode + DeepSeek | `cli` | `opencode` |
 | Reviewer（测试+审查） | GPT | `cli` | `codex` |
 | Frontend（前端优化，**可关**） | Gemini | `cli` | `agy`（Google Antigravity） |
 
@@ -49,11 +75,11 @@ curl -fsSL https://raw.githubusercontent.com/<you>/claude-multi-ai-kit/main/inst
 
 ## 当前状态
 
-🟡 **设计完成，待实现**。本仓库目前包含完整设计文档；脚本与模板将由 DeepSeek 按 [`docs/02-implementation-spec.md`](docs/02-implementation-spec.md) 的 §10 路线图分阶段实现：
+🟡 **P1/P2/P3 最小可用版已实现，升级/卸载待实现**。当前已有 CLI wrapper、`ship.py` 编排器、最小安装器和 doctor；升级、卸载和完整 smoke test 继续按 [`docs/02-implementation-spec.md`](docs/02-implementation-spec.md) 分阶段实现：
 
-- P1 · `ai_common.py` + 4 个 CLI 包装器
-- P2 · `ship.py` 编排器
-- P3 · `install.sh` / `uninstall.sh` / 模板
+- P1 · `ai_common.py` + 4 个 CLI 包装器（已实现）
+- P2 · `ship.py` 编排器（已实现）
+- P3 · `install.sh` / `doctor.sh` / 模板（最小版已实现）
 - P4 · `upgrade.sh` / `doctor.sh` / `kit.lock`
 - P5 · Claude Code 适配层（agents + ship.md）
 - P6 · README 完善 + smoke test
